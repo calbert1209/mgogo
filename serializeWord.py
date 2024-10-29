@@ -23,12 +23,29 @@ class BaseWord:
         if ints is not None:
           return self.__intsToWord(ints)
         
+    def toInts(self, word: bytes) -> list[int]:
+        if word[0] != ord(self._prefix):
+            raise ValueError(f"Word does not start with {self._prefix}")
+        return list(word[1:])
+      
+    def toString(self, word: bytes) -> str:
+        if word[0] != ord(self._prefix):
+            raise ValueError(f"Word does not start with {self._prefix}")
+        return word[1:].decode('utf-8')
+      
+        
 class SerializeShortWord(BaseWord):
     def __init__(self):
         super().__init__('#', 3)
     
     def word(self, **kwargs) -> bytes:
         return super().word(**kwargs)
+      
+    def toInts(self, word: bytes) -> list[int]:
+        return super().toInts(word)
+      
+    def toString(self, word: bytes) -> str:
+        return super().toString(word)
       
 class SerializeWord(BaseWord):
     def __init__(self):
@@ -37,10 +54,21 @@ class SerializeWord(BaseWord):
     def word(self, **kwargs) -> bytes:
         return super().word(**kwargs)
       
+    def toInts(self, word: bytes) -> list[int]:
+        return super().toInts(word)
+      
+    def toString(self, word: bytes) -> str:
+        return super().toString(word)
+      
 class SerializeLongWord(BaseWord):
     def __init__(self):
         super().__init__('$', 15)
     
     def word(self, **kwargs) -> bytes:
         return super().word(**kwargs)
+  
+    def toInts(self, word: bytes) -> list[int]:
+        return super().toInts(word)
       
+    def toString(self, word: bytes) -> str:
+        return super().toString(word)

@@ -22,6 +22,26 @@ class TestSerializeWord(unittest.TestCase):
 
         with self.assertRaises(ValueError):
             self.serializeWord.word(ints=[1, 2, 3, 4, 5, 6, 7, 8])
+            
+    def test_toInts(self):
+        """toInts should return a list of integers from a word"""
+        output = self.serializeWord.toInts(b"_\x01\x02\x03")
+        self.assertEqual(output, [1, 2, 3])
+        
+    def test_toInts_raises_error(self):
+        """toInts should raise ValueError if word does not start with prefix"""
+        with self.assertRaises(ValueError):
+            self.serializeWord.toInts(b"#\x01\x02\x03")
+    
+    def test_toString(self):
+        """toString should return a string from a word"""
+        output = self.serializeWord.toString(b"_hello")
+        self.assertEqual(output, "hello")
+        
+    def test_toString_raises_error(self):
+        """toString should raise ValueError if word does not start with prefix"""
+        with self.assertRaises(ValueError):
+            self.serializeWord.toString(b"#hello")
 
 
 class TestSerializeLongWord(unittest.TestCase):
@@ -50,6 +70,26 @@ class TestSerializeLongWord(unittest.TestCase):
             self.serializeLongWord.word(
                 ints=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
             )
+            
+    def test_toInts(self):
+        """toInts should return a list of integers from a word"""
+        output = self.serializeLongWord.toInts(b"$\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f")
+        self.assertEqual(output, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])
+        
+    def test_toInts_raises_error(self):
+        """toInts should raise ValueError if word does not start with prefix"""
+        with self.assertRaises(ValueError):
+            self.serializeLongWord.toInts(b"_\x01\x02\x03")
+            
+    def test_toString(self):
+        """toString should return a string from a word"""
+        output = self.serializeLongWord.toString(b"$hello friends")
+        self.assertEqual(output, "hello friends")
+        
+    def test_toString_raises_error(self):
+        """toString should raise ValueError if word does not start with prefix"""
+        with self.assertRaises(ValueError):
+            self.serializeLongWord.toString(b"#hello friends")
 
 
 class TestSerializeShortWord(unittest.TestCase):
