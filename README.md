@@ -33,4 +33,3 @@ Unicode is not supported by the default Circuit Python font, so one byte per cha
 ## About the name
 
 _Mgogo_ is Swahili for woodpecker, a bird with a sense of rhythm.
-
