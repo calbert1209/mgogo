@@ -1,7 +1,6 @@
 import unittest
 from serializeWord import SerializeShortWord, SerializeWord, SerializeLongWord
 
-
 class TestSerializeWord(unittest.TestCase):
     serializeWord = SerializeWord()
 
@@ -51,13 +50,13 @@ class TestSerializeLongWord(unittest.TestCase):
 
     def test_fromInts(self):
         """fromInts should return a word from a list of integers"""
-        output = self.serializeLongWord.fromInts([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])
+        output = self.serializeLongWord.fromInts([x + 1 for x in range(15)])
         self.assertEqual(output, b"$\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f")
         
     def test_fromInts_raises_error(self):
         """fromInts should raise ValueError if word is too long"""
         with self.assertRaises(ValueError):
-            self.serializeLongWord.fromInts([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11])
+            self.serializeLongWord.fromInts([x for x in range(16)])
         
     def test_fromString(self):
         """fromString should return a word from a string"""
