@@ -5,23 +5,25 @@ from serializeWord import SerializeShortWord, SerializeWord, SerializeLongWord
 class TestSerializeWord(unittest.TestCase):
     serializeWord = SerializeWord()
 
-    def test_word_with_string(self):
-        """word should accept a string under 8 characters in length"""
-        output = self.serializeWord.word(string="hello")
-        self.assertEqual(output, b"_hello")
-
-    def test_word_with_ints(self):
-        """word should accept a list of integers under 8 items in length"""
-        output = self.serializeWord.word(ints=[1, 2, 3])
+    def test_fromInts(self):
+        """fromInts should return a word from a list of integers"""
+        output = self.serializeWord.fromInts([1, 2, 3])
         self.assertEqual(output, b"_\x01\x02\x03")
-
-    def test_word_raises_error(self):
-        """serializeWord should raise ValueError if arg has length greater than 7"""
+        
+    def test_fromInts_raises_error(self):
+        """fromInts should raise ValueError if word is too long"""
         with self.assertRaises(ValueError):
-            self.serializeWord.word(string="hello_world")
-
+            self.serializeWord.fromInts([1, 2, 3, 4, 5, 6, 7, 8])
+        
+    def test_fromString(self):
+        """fromString should return a word from a string"""
+        output = self.serializeWord.fromString("hello")
+        self.assertEqual(output, b"_hello")
+            
+    def test_fromString_raises_error(self):
+        """fromString should raise ValueError if word is too long"""
         with self.assertRaises(ValueError):
-            self.serializeWord.word(ints=[1, 2, 3, 4, 5, 6, 7, 8])
+            self.serializeWord.fromString("hello friends")
             
     def test_toInts(self):
         """toInts should return a list of integers from a word"""
@@ -47,29 +49,25 @@ class TestSerializeWord(unittest.TestCase):
 class TestSerializeLongWord(unittest.TestCase):
     serializeLongWord = SerializeLongWord()
 
-    def test_word_with_string(self):
-        """word should accept a string under 16 characters in length"""
-        output = self.serializeLongWord.word(string="hello friends")
+    def test_fromInts(self):
+        """fromInts should return a word from a list of integers"""
+        output = self.serializeLongWord.fromInts([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])
+        self.assertEqual(output, b"$\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f")
+        
+    def test_fromInts_raises_error(self):
+        """fromInts should raise ValueError if word is too long"""
+        with self.assertRaises(ValueError):
+            self.serializeLongWord.fromInts([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11])
+        
+    def test_fromString(self):
+        """fromString should return a word from a string"""
+        output = self.serializeLongWord.fromString("hello friends")
         self.assertEqual(output, b"$hello friends")
-
-    def test_word_with_ints(self):
-        """word should accept a list of integers under 16 items in length"""
-        output = self.serializeLongWord.word(
-            ints=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
-        )
-        self.assertEqual(
-            output, b"$\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f"
-        )
-
-    def test_word_raises_error(self):
-        """serializeWord should raise ValueError if arg has length greater than 15"""
+        
+    def test_fromString_raises_error(self):
+        """fromString should raise ValueError if word is too long"""
         with self.assertRaises(ValueError):
-            self.serializeLongWord.word(string="hello_world_hello")
-
-        with self.assertRaises(ValueError):
-            self.serializeLongWord.word(
-                ints=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
-            )
+            self.serializeLongWord.fromString("hello friends and family")
             
     def test_toInts(self):
         """toInts should return a list of integers from a word"""
@@ -95,23 +93,45 @@ class TestSerializeLongWord(unittest.TestCase):
 class TestSerializeShortWord(unittest.TestCase):
     serializeShortWord = SerializeShortWord()
 
-    def test_word_with_string(self):
-        """word should accept a string under 4 characters in length"""
-        output = self.serializeShortWord.word(string="hi")
-        self.assertEqual(output, b"#hi")
-
-    def test_word_with_ints(self):
-        """word should accept a list of integers under 4 items in length"""
-        output = self.serializeShortWord.word(ints=[1, 2, 3])
+    def test_fromInts(self):
+        """fromInts should return a word from a list of integers"""
+        output = self.serializeShortWord.fromInts([1, 2, 3])
         self.assertEqual(output, b"#\x01\x02\x03")
-
-    def test_word_raises_error(self):
-        """serializeWord should raise ValueError if arg has length greater than 3"""
+        
+    def test_fromInts_raises_error(self):
+        """fromInts should raise ValueError if word is too long"""
         with self.assertRaises(ValueError):
-            self.serializeShortWord.word(string="hello")
-
+            self.serializeShortWord.fromInts([1, 2, 3, 4])
+    
+    def test_fromString(self):
+        """fromString should return a word from a string"""
+        output = self.serializeShortWord.fromString("hi")
+        self.assertEqual(output, b"#hi")
+        
+    def test_fromString_raises_error(self):
+        """fromString should raise ValueError if word is too long"""
         with self.assertRaises(ValueError):
-            self.serializeShortWord.word(ints=[1, 2, 3, 4])
+            self.serializeShortWord.fromString("hello")
+        
+    def test_toInts(self):
+        """toInts should return a list of integers from a word"""
+        output = self.serializeShortWord.toInts(b"#\x01\x02\x03")
+        self.assertEqual(output, [1, 2, 3])
+        
+    def test_toInts_raises_error(self):
+        """toInts should raise ValueError if word does not start with prefix"""
+        with self.assertRaises(ValueError):
+            self.serializeShortWord.toInts(b"_\x01\x02\x03")
+            
+    def test_toString(self):
+        """toString should return a string from a word"""
+        output = self.serializeShortWord.toString(b"#hi")
+        self.assertEqual(output, "hi")
+        
+    def test_toString_raises_error(self):
+        """toString should raise ValueError if word does not start with prefix"""
+        with self.assertRaises(ValueError):
+            self.serializeShortWord.toString(b"_hi")
 
 
 def makeSuite():
