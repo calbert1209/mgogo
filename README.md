@@ -26,7 +26,7 @@ Inspired by the [Redis serialization protocol specification (RESP)](https://redi
 
 ## Intended limitations
 
-Strings beyond 15 characters in length are not supported. In actuality the display UI cannot handle more strings longer than this anyway.
+Strings beyond 15 characters in length are not supported. In actuality the display UI cannot handle strings longer than this anyway.
 
 Unicode is not supported by the default Circuit Python font, so one byte per character should be sufficient.
 
