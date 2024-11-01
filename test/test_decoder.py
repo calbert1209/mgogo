@@ -1,9 +1,11 @@
 import unittest
 from serialize import Decoder
-from entities import LongWord, PushCode, ReleaseCode, ShortWord, Word
+from entities import Array, LongWord, PushCode, ReleaseCode, ShortWord, Word
 
-class TestDecoder(unittest.TestCase):
-  decoder = Decoder()
+fixedLengthClasses = [PushCode, ReleaseCode, ShortWord, Word, LongWord]
+dynamicLengthClasses = [Array]
+class TestStaticLengthDecoder(unittest.TestCase):
+  decoder = Decoder(fixedLengthClasses=fixedLengthClasses)
   
   def test_decode_push_code(self):
     """decode should return a PushCode object from a push code"""
@@ -66,3 +68,45 @@ class TestDecoder(unittest.TestCase):
       
     with self.assertRaises(ValueError):
       self.decoder.decode(b"$Hello my good friend")
+      
+      
+class TestArrayDecoder(unittest.TestCase):
+  decoder = Decoder(fixedLengthClasses=fixedLengthClasses)
+  
+  def test_decode_keycode_array(self):
+    """decode should return an array of objects from an array"""
+    output = self.decoder.decode(b"*\x03+\x02+\x03-\x04")
+    self.assertEqual(len(output), 3)
+    self.assertIsInstance(output[0], PushCode)
+    self.assertIsInstance(output[1], PushCode)
+    self.assertIsInstance(output[2], ReleaseCode)
+    self.assertEqual(output[0].value, 2)
+    self.assertEqual(output[1].value, 3)
+    self.assertEqual(output[2].value, 4)
+    
+  def test_decode_short_word_array(self):
+    """decode should return an array of objects from an array"""
+    output = self.decoder.decode(b"*\x02#\xff\x80\x00#\x00\xff\x00")
+    self.assertEqual(len(output), 2)
+    self.assertIsInstance(output[0], ShortWord)
+    self.assertIsInstance(output[1], ShortWord)
+    self.assertEqual(output[0].value, b"\xff\x80\x00")
+    self.assertEqual(output[1].value, b"\x00\xff\x00")
+    
+  def test_decode_word_array(self):
+    """decode should return an array of objects from an array"""
+    output = self.decoder.decode(b"*\x02_Hello  _World  ")
+    self.assertEqual(len(output), 2)
+    self.assertIsInstance(output[0], Word)
+    self.assertIsInstance(output[1], Word)
+    self.assertEqual(output[0].value, b"Hello  ")
+    self.assertEqual(output[1].value, b"World  ")
+    
+  def test_decode_long_word_array(self):
+    """decode should return an array of objects from an array"""
+    output = self.decoder.decode(b"*\x02$Hello my friend$Goodbye world! ")
+    self.assertEqual(len(output), 2)
+    self.assertIsInstance(output[0], LongWord)
+    self.assertIsInstance(output[1], LongWord)
+    self.assertEqual(output[0].value, b"Hello my friend")
+    self.assertEqual(output[1].value, b"Goodbye world! ")
