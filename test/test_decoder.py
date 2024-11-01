@@ -3,9 +3,9 @@ from serialize import Decoder
 from entities import Array, LongWord, PushCode, ReleaseCode, ShortWord, Word
 
 fixedLengthClasses = [PushCode, ReleaseCode, ShortWord, Word, LongWord]
-dynamicLengthClasses = [Array]
+containerClasses = [Array]
 class TestStaticLengthDecoder(unittest.TestCase):
-  decoder = Decoder(fixedLengthClasses=fixedLengthClasses)
+  decoder = Decoder(fixedLengthClasses, containerClasses)
   
   def test_decode_push_code(self):
     """decode should return a PushCode object from a push code"""
@@ -71,7 +71,7 @@ class TestStaticLengthDecoder(unittest.TestCase):
       
       
 class TestArrayDecoder(unittest.TestCase):
-  decoder = Decoder(fixedLengthClasses=fixedLengthClasses)
+  decoder = Decoder(fixedLengthClasses, containerClasses)
   
   def test_decode_keycode_array(self):
     """decode should return an array of objects from an array"""
