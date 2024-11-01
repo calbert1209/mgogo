@@ -13,20 +13,29 @@ class Prefix:
 
     END = "\n"
 
+
 class ParsableAsBytes:
-  @staticmethod
-  def fromBytes(data: bytes) -> 'ParsableAsBytes':
-    raise NotImplementedError()
-  
-  def canParseFrom(data: bytes) -> bool:
-    raise NotImplementedError()
+    @staticmethod
+    def fromBytes(data: bytes) -> "ParsableAsBytes":
+        raise NotImplementedError()
+
+    def canParseFrom(data: bytes) -> bool:
+        raise NotImplementedError()
+
 
 class ParsableBytesContainer:
     def __init(self) -> None:
         pass
-      
-    def decode(self, decoder):
+
+    @staticmethod
+    def fromBytes(data: bytes, decoder) -> "ParsableAsBytes":
         raise NotImplementedError()
+
+    @staticmethod
+    def canParseFrom(data: bytes) -> bool:
+        raise NotImplementedError()
+
+
 class PushCode(ParsableAsBytes):
     _prefix = Prefix.PCODE
     _length = 2
@@ -145,57 +154,58 @@ class LongWord(ParsableAsBytes):
         return data[0] == ord(LongWord._prefix)
 
 
-class Array(ParsableAsBytes, ParsableBytesContainer):
+class Array(ParsableBytesContainer):
     _prefix = Prefix.ARRAY
     _items = None
     _length = -1
 
-    def __init__(self, length: int, contents: bytes) -> None:
-        self.contents = contents
+    def __init__(self, length: int, items: ParsableAsBytes) -> None:
         self._length = length
-        
-    def __isItemPrefix(self, byte: int) -> bool:
-        first = self.contents[0]
-        if first == ord(Prefix.PCODE) or byte == ord(Prefix.RCODE):
+        self._items = items
+
+    @staticmethod
+    def __isItemPrefix(first: int, byte: int) -> bool:
+        if first == ord(Prefix.PCODE) or first == ord(Prefix.RCODE):
             return byte == ord(Prefix.PCODE) or byte == ord(Prefix.RCODE)
-        
+
         return byte == first
-        
-    def __splitKeyCodeContents(self) -> list[bytes]:
+
+    @staticmethod
+    def __parseContents(contents) -> list[bytes]:
+        first = contents[0]  
         output = []
         item = b""
-        for byte in self.contents:
-            if self.__isItemPrefix(byte):
+        for byte in contents:
+            if Array.__isItemPrefix(first, byte):
                 # push any existing item to output
                 if len(item) > 0:
                     output.append(item)
                     item = b""
-                    
+
             item += bytes([byte])
-              
-        if (len(item) > 0):
+
+        if len(item) > 0:
             output.append(item)
-                
+
         return output
 
     @property
-    def items(self) -> list[bytes]:
-        if self._items is None:
-            self._items = self.__splitKeyCodeContents()
-
-        return self._items
-      
-    def decode(self, decoder):
-        return [decoder(item) for item in self.items]
-          
-    @property
     def length(self) -> int:
         return self._length
+      
+    @property
+    def items(self) -> list[ParsableAsBytes]:
+        return self._items
 
     @staticmethod
-    def fromBytes(data: bytes):
+    def fromBytes(data: bytes, decoder):
         length = data[1]
-        return Array(length=length, contents=data[2:])
+        contents = data[2:]
+        items = [decoder(item) for item in Array.__parseContents(contents)]
+        if len(items) != length:
+            raise ValueError("Array length does not match items' length")
+
+        return Array(length=length, items=items)
 
     @staticmethod
     def canParseFrom(data: bytes) -> bool:
