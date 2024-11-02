@@ -1,4 +1,5 @@
-from entities import Array, ParsableAsBytes, ParsableBytesContainer
+from containers import ParsableBytesContainer
+from scalars import ParsableAsBytes
 
 
 class Decoder:
