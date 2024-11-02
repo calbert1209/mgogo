@@ -64,7 +64,7 @@ class ShortWord(ParsableAsBytes):
         self.value = value
 
     def toInts(self) -> list[int]:
-        return [int(i) for i in self.value.split()]
+        return [int(i) for i in self.value]
 
     @staticmethod
     def fromBytes(data: bytes):

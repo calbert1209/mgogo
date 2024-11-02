@@ -1,10 +1,10 @@
 import unittest
 from scalars import LongWord, PushCode, ReleaseCode, ShortWord, Word
-from containers import Array
+from containers import Array, KeyCommand
 from serialize import Decoder
 
 fixedLengthClasses = [PushCode, ReleaseCode, ShortWord, Word, LongWord]
-containerClasses = [Array]
+containerClasses = [Array, KeyCommand]
 
 
 class TestStaticLengthDecoder(unittest.TestCase):
@@ -126,3 +126,15 @@ class TestArrayDecoder(unittest.TestCase):
 
         self.assertEqual(items[0].value, b"Hello my friend")
         self.assertEqual(items[1].value, b"Goodbye world! ")
+
+    def test_decode_key_command(self):
+        """decode should return a key command object from bytes"""
+        bytes = b"<_COPY   #\xff\x80\x00*\x02+\x45+\x44"
+        output = self.decoder.decode(bytes)
+
+        self.assertIsInstance(output, KeyCommand)
+        self.assertEqual(output.label.toString(), "COPY   ")
+        self.assertEqual(output.color.toInts(), [255, 128, 0])
+        self.assertEqual(output.codes.length, 2)
+        self.assertListEqual(
+            [x.value for x in output.codes.items], [0x45, 0x44])
