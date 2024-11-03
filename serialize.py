@@ -1,5 +1,5 @@
-from containers import ParsableBytesContainer
-from scalars import ParsableAsBytes
+from containers.parsableByteContainer import ParsableBytesContainer
+from scalars.parsableAsBytes import ParsableAsBytes
 
 
 class Decoder:

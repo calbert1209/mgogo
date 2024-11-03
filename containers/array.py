@@ -1,18 +1,6 @@
+from containers.parsableByteContainer import ParsableBytesContainer
 from prefix import Prefix
-from scalars import ParsableAsBytes, PushCode, ReleaseCode, ShortWord, Word
-
-
-class ParsableBytesContainer:
-    def __init(self) -> None:
-        pass
-
-    @staticmethod
-    def fromBytes(data: bytes, decode) -> "ParsableAsBytes":
-        raise NotImplementedError()
-
-    @staticmethod
-    def canParseFrom(data: bytes) -> bool:
-        raise NotImplementedError()
+from scalars.parsableAsBytes import ParsableAsBytes
 
 
 class Array(ParsableBytesContainer):
@@ -59,7 +47,7 @@ class Array(ParsableBytesContainer):
         return self._items
 
     @staticmethod
-    def fromBytes(data: bytes, decode):
+    def fromBytes(data: bytes, decode) -> "Array":
         length = data[1]
         contents = data[2:]
         items = [decode(item) for item in Array.__parseContents(contents)]
@@ -72,40 +60,3 @@ class Array(ParsableBytesContainer):
     @staticmethod
     def canParseFrom(data: bytes) -> bool:
         return data[0] == ord(Array._prefix)
-
-
-class KeyCommand(ParsableBytesContainer):
-    _prefix = Prefix.COMM
-    _label: Word
-    _color: ShortWord
-    _codes: list
-
-    def __init__(self, label: str, color: tuple[int, int, int], codes: list) -> None:
-        self._label = label
-        self._color = color
-        self._codes = codes
-
-    @property
-    def label(self):
-        return self._label
-
-    @property
-    def color(self):
-        return self._color
-
-    @property
-    def codes(self):
-        return self._codes
-
-    @staticmethod
-    def fromBytes(data: bytes, decode):
-        colorStart = Word.length + 1
-        keyCodesStart = colorStart + ShortWord.length
-        label = decode(data[1:colorStart])
-        color = decode(data[colorStart:keyCodesStart])
-        codes = decode(data[keyCodesStart:])
-        return KeyCommand(label, color, codes)
-
-    @staticmethod
-    def canParseFrom(data: bytes) -> bool:
-        return data[0] == ord(KeyCommand._prefix)
