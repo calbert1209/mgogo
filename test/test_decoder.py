@@ -132,9 +132,8 @@ class TestArrayDecoder(unittest.TestCase):
 
     copy = b"<_COPY   #\xff\x80\x00*\x02+\x45+\x44"
     paste = b"<_PASTE  #\x00\xff\x00*\x02+\x45+\x47"
-    cut = b"<_CUT    #\x00\x00\xff*\x02+\x66+\x67"
 
-    def test_decode_key_command(self):
+    def test_decode_key_command_copy(self):
         """decode should return a key command object from bytes"""
         output = self.decoder.decode(self.copy)
 
@@ -144,3 +143,14 @@ class TestArrayDecoder(unittest.TestCase):
         self.assertEqual(output.codes.length, 2)
         self.assertListEqual(
             [x.value for x in output.codes.items], [0x45, 0x44])
+
+    def test_decode_key_command_paste(self):
+        """decode should return a key command object from bytes"""
+        output = self.decoder.decode(self.paste)
+
+        self.assertIsInstance(output, KeyCommand)
+        self.assertEqual(output.label.toTrimmed(), "PASTE")
+        self.assertEqual(output.color.toInts(), [0, 255, 0])
+        self.assertEqual(output.codes.length, 2)
+        self.assertListEqual(
+            [x.value for x in output.codes.items], [0x45, 0x47])

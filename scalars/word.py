@@ -37,6 +37,9 @@ class Word(ParsableAsBytes):
     def toString(self) -> str:
         return self.value.decode()
 
+    def toTrimmed(self) -> str:
+        return self.toString().strip()
+
     @staticmethod
     def fromBytes(data: bytes):
         return Word(data[1:])
