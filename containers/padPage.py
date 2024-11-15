@@ -1,5 +1,5 @@
 
-from containers.keyCommand import KeyCommand
+from containers.array import Array
 from containers.parsableByteContainer import ParsableBytesContainer
 from prefix import Prefix
 from scalars.word import LongWord
@@ -8,7 +8,7 @@ from scalars.word import LongWord
 class PadPage(ParsableBytesContainer):
     _prefix = Prefix.PAGE
 
-    def __init__(self, label: LongWord, commands):
+    def __init__(self, label: LongWord, commands: Array):
         self._label = label
         self._commands = commands
 
