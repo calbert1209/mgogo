@@ -2,19 +2,19 @@
 from containers.keyCommand import KeyCommand
 from containers.parsableByteContainer import ParsableBytesContainer
 from prefix import Prefix
-from scalars import LongWord
+from scalars.word import LongWord
 
 
 class PadPage(ParsableBytesContainer):
     _prefix = Prefix.PAGE
 
-    def __init__(self, label: LongWord, commands: list[KeyCommand]):
+    def __init__(self, label: LongWord, commands):
         self._label = label
         self._commands = commands
 
     @property
     def label(self):
-        self._label
+        return self._label
 
     @property
     def commands(self):

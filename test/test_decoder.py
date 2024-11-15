@@ -3,11 +3,12 @@ from scalars.word import LongWord, ShortWord, Word
 from scalars.keyCode import PushCode, ReleaseCode
 from containers.array import Array
 from containers.keyCommand import KeyCommand
+from containers.padPage import PadPage
 
 from serialize import Decoder
 
 fixedLengthClasses = [PushCode, ReleaseCode, ShortWord, Word, LongWord]
-containerClasses = [Array, KeyCommand]
+containerClasses = [Array, KeyCommand, PadPage]
 
 
 class TestStaticLengthDecoder(unittest.TestCase):
@@ -132,6 +133,7 @@ class TestArrayDecoder(unittest.TestCase):
 
     copy = b"<_COPY   #\xff\x80\x00*\x02+\x45+\x44"
     paste = b"<_PASTE  #\x00\xff\x00*\x02+\x45+\x47"
+    cut = b"<_CUT    #\x00\x00\xff*\x02+\x66+\x67"
 
     def test_decode_key_command_copy(self):
         """decode should return a key command object from bytes"""
@@ -154,3 +156,19 @@ class TestArrayDecoder(unittest.TestCase):
         self.assertEqual(output.codes.length, 2)
         self.assertListEqual(
             [x.value for x in output.codes.items], [0x45, 0x47])
+
+    padPage = \
+        b"[$FIRSTPAGE      " +\
+        b"*\x03" +\
+        b"<_COPY   #\xff\x80\x00*\x02+\x45+\x44" +\
+        b"<_PASTE  #\x00\xff\x00*\x02+\x45+\x47" +\
+        b"<_CUT    #\x00\x00\xff*\x02+\x66+\x67"
+
+    def test_decode_pad_page(self):
+        """decode should return a pad page object from bytes"""
+        output = self.decoder.decode(self.padPage)
+        self.assertIsInstance(output, PadPage)
+        self.assertEqual(output.label.toString(), "FIRSTPAGE      ")
+        self.assertEqual(len(output.commands.items), 3)
+        for item in output.commands.items:
+            self.assertIsInstance(item, KeyCommand)
