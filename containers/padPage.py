@@ -1,7 +1,7 @@
 
 from containers.array import Array
 from containers.parsableByteContainer import ParsableBytesContainer
-from prefix import Prefix
+from mgogo.prefix import Prefix
 from scalars.word import LongWord
 
 

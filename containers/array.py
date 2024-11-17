@@ -1,5 +1,5 @@
 from containers.parsableByteContainer import ParsableBytesContainer
-from prefix import Prefix
+from mgogo.prefix import Prefix
 from scalars.parsableAsBytes import ParsableAsBytes
 
 

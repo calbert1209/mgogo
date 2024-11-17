@@ -1,6 +1,6 @@
 from containers.parsableByteContainer import ParsableBytesContainer
 from scalars.parsableAsBytes import ParsableAsBytes
-from prefix import Prefix
+from mgogo.prefix import Prefix
 
 
 class Decoder:

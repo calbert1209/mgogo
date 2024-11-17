@@ -5,7 +5,7 @@ from containers.array import Array
 from containers.keyCommand import KeyCommand
 from containers.padPage import PadPage
 
-from decoder import Decoder
+from mgogo.decoder import Decoder
 
 fixedLengthClasses = [PushCode, ReleaseCode, ShortWord, Word, LongWord]
 containerClasses = [Array, KeyCommand, PadPage]
