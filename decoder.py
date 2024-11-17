@@ -1,5 +1,6 @@
 from containers.parsableByteContainer import ParsableBytesContainer
 from scalars.parsableAsBytes import ParsableAsBytes
+from prefix import Prefix
 
 
 class Decoder:
@@ -23,3 +24,6 @@ class Decoder:
                 return cls.fromBytes(data, self.decode)
 
         raise ValueError("Data cannot be parsed")
+
+    def trim(self, nvmData: bytes) -> bytes:
+        return nvmData.split(Prefix.END.encode())[0]

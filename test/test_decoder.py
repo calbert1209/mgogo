@@ -196,3 +196,9 @@ class TestArrayDecoder(unittest.TestCase):
 
         self.assertIsInstance(pages[0], PadPage)
         self.assertEqual(len(pages[1].commands.items), 4)
+
+    def test_trim_nvm_bytes(self):
+        mockNvmBytes = self.padPagesArray + b"\n\22\23\22\23\22\23\n\0\0\0\0\0"
+        output = self.decoder.trim(mockNvmBytes)
+        self.assertEqual(len(self.padPagesArray), len(output))
+        self.assertEqual(Array.canParseFrom(output), True)
