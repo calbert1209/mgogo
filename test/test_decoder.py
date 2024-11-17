@@ -172,3 +172,27 @@ class TestArrayDecoder(unittest.TestCase):
         self.assertEqual(len(output.commands.items), 3)
         for item in output.commands.items:
             self.assertIsInstance(item, KeyCommand)
+
+    padPagesArray = \
+        b"*\x02" +\
+        b"[$FIRSTPAGE      " +\
+        b"*\x03" +\
+        b"<_COPY   #\xff\x80\x00*\x02+\x45+\x44" +\
+        b"<_PASTE  #\x00\xff\x00*\x02+\x45+\x47" +\
+        b"<_CUT    #\x00\x00\xff*\x02+\x66+\x67" +\
+        b"[$SECONdPAGE     " +\
+        b"*\x04" +\
+        b"<_FOO    #\xff\x80\x00*\x02+\x45+\x44" +\
+        b"<_BAR    #\x00\xff\x00*\x02+\x45+\x47" +\
+        b"<_BAZ    #\x00\x00\xff*\x02+\x66+\x67" +\
+        b"<_BUZ    #\xff\x00\x00*\x03+\x66+\x67-\x67"
+
+    def test_decode_pad_pages_array(self):
+        """decode should return an array of pad page objects from bytes"""
+        output = self.decoder.decode(self.padPagesArray)
+        pages = output.items
+        self.assertIsInstance(output, Array)
+        self.assertEqual(len(pages), 2)
+
+        self.assertIsInstance(pages[0], PadPage)
+        self.assertEqual(len(pages[1].commands.items), 4)

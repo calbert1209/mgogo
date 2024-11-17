@@ -8,7 +8,7 @@ class Array(ParsableBytesContainer):
     _items = None
     _length = -1
 
-    def __init__(self, length: int, items: ParsableAsBytes) -> None:
+    def __init__(self, length: int, items: ParsableBytesContainer) -> None:
         self._length = length
         self._items = items
 
